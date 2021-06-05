@@ -1,4 +1,4 @@
-from poetry.plugins.application_plugin import ApplicationPlugin
+from poetry.plugins.application_plugin import ApplicationPlugin    # type: ignore
 
 from poetry_release.command import release_factory
 
