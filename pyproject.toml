@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "poetry-release"
+version = "0.1.0"
+description = ""
+license = "MIT"
+authors = ["Denis Kayshev <topenkoff@gmail.com>"]
+readme = "README.md"
+homepage = "https://github.com/topenkoff/poetry-release"
+repository = "https://github.com/topenkoff/poetry-release"
+
+packages = [
+    { include = "poetry_release"}
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+poetry = "^1.2.0a1"
+
+[tool.poetry.plugins."poetry.application.plugin"]
+release = "poetry_release.plugin:ReleasePlugin"
+
+[tool.poetry.dev-dependencies]
+mypy = "^0.812"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

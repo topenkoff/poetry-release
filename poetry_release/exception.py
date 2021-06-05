@@ -1,0 +1,3 @@
+class UpdateVersionError(ValueError):
+    pass
+
