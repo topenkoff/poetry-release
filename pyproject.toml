@@ -17,7 +17,7 @@ python = "^3.6"
 poetry = "^1.2.0a1"
 
 [tool.poetry.plugins."poetry.application.plugin"]
-release = "poetry_release.plugin:ReleasePlugin"
+poetry-release = "poetry_release.plugin:ReleasePlugin"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.812"
