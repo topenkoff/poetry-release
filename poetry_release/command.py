@@ -51,7 +51,10 @@ class ReleaseCommand(Command):
 
     name = "release"
 
-    description = "some_description"
+    description = (
+        "Plugin for release management in projects "
+        "based on Poetry"
+    )
 
     arguments = [
         argument(
@@ -65,22 +68,30 @@ class ReleaseCommand(Command):
     options = [
         option(
             "disable-push",
+            description="Disable push commits and tags in repository",
             flag=True,
             value_required=False,
         ),
         option(
             "disable-tag",
+            description="Disable creating git tags",
             flag=True,
             value_required=False,
         ),
         option(
             "disable-dev",
+            description="Disable bump version after stable release",
             flag=True,
             value_required=False,
         )
     ]
 
-    help = "some_help"
+    help = """\
+  The release command helps you to control your project version.
+  It allows bump version, create tags and commit and push them 
+  to project repository. Supported release levels are:
+     major, minor, patch, release, rc, beta, alpha
+  """
 
 
     def handle(self) -> None:
@@ -89,10 +100,16 @@ class ReleaseCommand(Command):
             next_release = ReleaseLevel.parse(self.argument("level"))
             settings = ReleaseSettings(self)
             git = ReleaseGit()
+            if not git.repo_exists:
+                self.line(
+                    "<fg=yellow>Git repository not found. "
+                    "Please initialize repository in your project"
+                )
+                return
             if git.has_modified():
                 self.line(
-                    "<fg=yellow>There are uncommitted changes in the repository. "
-                    "Please make a commit</>"
+                    "<fg=yellow>There are uncommitted changes "
+                    "in the repository. Please make a commit</>"
                 )
                 return
 
@@ -115,22 +132,23 @@ class ReleaseCommand(Command):
             if not settings.disable_push:
                 git.push_commit()
 
-            if not settings.disable_tag and next_version.is_stable():
-                tag_message = commit_message
-                git.create_tag(next_version.text, tag_message)
-                if not settings.disable_push:
-                    git.push_tag(next_version.text)
+            if next_version.is_stable():
+                if not settings.disable_tag:
+                    tag_message = commit_message
+                    git.create_tag(next_version.text, tag_message)
+                    if not settings.disable_push:
+                        git.push_tag(next_version.text)
 
-            if next_version.is_stable() and not settings.disable_dev:
-                next_version = next_version.next_patch().first_prerelease()
-                self.set_version(poetry, next_version.text)
-                next_release_message = (
-                    f"Starting {poetry.package.name}'s next "
-                    f"development iteration {next_version.text}"
-                )
-                git.create_commit(next_release_message)
-                if not settings.disable_push:
-                    git.push_commit()
+                if not settings.disable_dev:
+                    next_version = next_version.next_patch().first_prerelease()
+                    self.set_version(poetry, next_version.text)
+                    next_release_message = (
+                        f"Starting {poetry.package.name}'s next "
+                        f"development iteration {next_version.text}"
+                    )
+                    git.create_commit(next_release_message)
+                    if not settings.disable_push:
+                        git.push_commit()
 
         except RuntimeError as e:
             self.line(f"<fg=red>{e}</>")
