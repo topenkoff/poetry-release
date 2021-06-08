@@ -6,7 +6,7 @@ from datetime import datetime
 class Templates(dict):
 
     def __missing__(self, key):
-        return "{key}".format(key=key)
+        return "{}".format(key)
 
 
 @dataclass

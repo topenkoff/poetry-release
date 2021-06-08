@@ -33,7 +33,7 @@ class ReleaseGit:
         subprocess.run(["git", "push"])
 
     def push_tag(self, tag_version):
-        subprocess.run(["git", "push", "origin" f"{tag_version}"])
+        subprocess.run(["git", "push", "origin", f"{tag_version}"])
 
 
     def _git_exists(self) -> bool:

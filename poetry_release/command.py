@@ -129,7 +129,7 @@ class ReleaseCommand(Command):
             templates = Templates(
                 package_name=poetry.package.name,
                 version=next_version.text,
-                data=datetime.today().strftime("%Y-%m-%d")
+                date=datetime.today().strftime("%Y-%m-%d"),
             )
 
             if settings.release_commit_message is None:
