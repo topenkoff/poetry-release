@@ -48,7 +48,7 @@ class ReleaseLevel(str, Enum):
             )
 
 
-class ReleaseCommand(Command):
+class ReleaseCommand(Command):  # type: ignore
 
     name = "release"
 

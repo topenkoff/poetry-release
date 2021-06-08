@@ -1,11 +1,12 @@
 import re
+from typing import Dict, Any
 from dataclasses import dataclass
 from datetime import datetime
 
 
-class Templates(dict):
+class Templates(Dict[Any, Any]):
 
-    def __missing__(self, key):
+    def __missing__(self, key: str) -> str:
         return "{}".format(key)
 
 
@@ -15,7 +16,7 @@ class Replacement:
     pattern: str
     replace: str
 
-    def update(self, template) -> None:
+    def update(self, template: Templates) -> None:
         with open(self.file, "r") as read_changelog:
             content = read_changelog.read()
             replace = self.replace.format_map(template)

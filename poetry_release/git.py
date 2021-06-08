@@ -3,7 +3,7 @@ import subprocess
 
 class ReleaseGit:
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.repo_exists = self._git_exists()
 
     def has_modified(self) -> bool:
@@ -19,20 +19,20 @@ class ReleaseGit:
             return True
 
 
-    def create_tag(self, tag_version, tag_message):
+    def create_tag(self, tag_version: str, tag_message: str) -> None:
         subprocess.run(
             ["git", "tag", "-a", f"{tag_version}", "-m", f"{tag_message}"],
         )
 
-    def create_commit(self, commit_message):
+    def create_commit(self, commit_message: str) -> None:
         subprocess.run(
             ["git", "commit", "-a", "-m", f"{commit_message}"]
         )
 
-    def push_commit(self):
+    def push_commit(self) -> None:
         subprocess.run(["git", "push"])
 
-    def push_tag(self, tag_version):
+    def push_tag(self, tag_version: str) -> None:
         subprocess.run(["git", "push", "origin", f"{tag_version}"])
 
 
