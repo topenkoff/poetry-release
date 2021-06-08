@@ -1,4 +1,5 @@
 from enum import Enum
+from datetime import datetime
 
 from cleo.commands.command import Command   # type: ignore
 from cleo.helpers import argument, option   # type: ignore
@@ -10,7 +11,7 @@ from poetry.poetry import Poetry    # type: ignore
 from poetry_release.git import ReleaseGit
 from poetry_release.exception import UpdateVersionError
 from poetry_release.settings import ReleaseSettings
-
+from poetry_release.changelog import Templates
 
 class ReleaseLevel(str, Enum):
 
@@ -124,10 +125,28 @@ class ReleaseCommand(Command):
                 return
 
             self.set_version(poetry, next_version.text)
-            commit_message = (
-                f"Released {poetry.package.name} {next_version.text}"
+
+            templates = Templates(
+                package_name=poetry.package.name,
+                version=next_version.text,
+                data=datetime.today().strftime("%Y-%m-%d")
             )
+
+            if settings.release_commit_message is None:
+                commit_message = "Released {package_name} {next_version}"
+            else:
+                commit_message = settings.release_commit_message
+            commit_message = commit_message.format_map(templates)
+
+            if settings.tag_name is None:
+                tag_name = next_version.text
+            else:
+                tag_name = settings.tag_name
+            tag_name = tag_name.format_map(templates)
             tag_message = commit_message
+            for replacement in settings.release_replacements:
+                replacement.update(templates)
+
             git.create_commit(commit_message)
             if not settings.disable_push:
                 git.push_commit()
@@ -135,9 +154,9 @@ class ReleaseCommand(Command):
             if next_version.is_stable():
                 if not settings.disable_tag:
                     tag_message = commit_message
-                    git.create_tag(next_version.text, tag_message)
+                    git.create_tag(tag_name, tag_message)
                     if not settings.disable_push:
-                        git.push_tag(next_version.text)
+                        git.push_tag(tag_name)
 
                 if not settings.disable_dev:
                     next_version = next_version.next_patch().first_prerelease()

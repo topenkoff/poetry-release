@@ -19,6 +19,15 @@ poetry = "^1.2.0a1"
 [tool.poetry.plugins."poetry.application.plugin"]
 poetry-release = "poetry_release.plugin:ReleasePlugin"
 
+
+[tool.poetry-release]
+release-replacements = [
+    { file="CHANGELOG.md", pattern="\\[Unreleased\\]", replace="[{version}] - {date}" },
+    { file="CHANGELOG.md", pattern="\\(https://semver.org/spec/v2.0.0.html\\).", replace="(https://semver.org/spec/v2.0.0.html).\n\n## [Unreleased]"},
+]
+release-commit-message = "Released {package_name} {version} 🎉🎉🎉"
+
+
 [tool.poetry.dev-dependencies]
 mypy = "^0.812"
 
