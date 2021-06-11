@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from cleo.commands.command import Command   # type: ignore
+from cleo.commands.command import Command
 
 from poetry_release.changelog import Replacement
 
 
 @dataclass
-class ReleaseSettings:
+class Settings:
     disable_push: bool
     disable_tag: bool
     disable_dev: bool
@@ -36,9 +36,6 @@ class ReleaseSettings:
             'post-release-commit-message'
         )
 
-        release_replacements = pyproject_settings.get(
+        self.release_replacements = pyproject_settings.get(
             'release-replacements'
         ) or []
-        self.release_replacements = [
-            Replacement(**r) for r in release_replacements
-        ]

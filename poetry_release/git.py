@@ -3,7 +3,7 @@ import subprocess
 from typing import Optional
 
 
-class ReleaseGit:
+class Git:
 
     def __init__(self) -> None:
         self.repo_exists = self._git_exists()
