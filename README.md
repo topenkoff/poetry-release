@@ -10,7 +10,7 @@ Inspired by [cargo-release](https://github.com/sunng87/cargo-release)
 - [x] [Changelog](https://keepachangelog.com/en/1.0.0/) support
 
 ## Installation
-**Note: ** Plugins work at Poetry with version 1.2.0a1 or above.
+**Note:** Plugins work at Poetry with version 1.2.0a1 or above.
 ```bash
 poetry add poetry-release
 ```
