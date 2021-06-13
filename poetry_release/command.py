@@ -10,8 +10,8 @@ from poetry.poetry import Poetry
 
 from poetry_release.git import Git
 from poetry_release.exception import UpdateVersionError
-from poetry_release.settings import Settings
 from poetry_release.replace import Template, Replacer
+from poetry_release.settings import Settings
 from poetry_release.version import ReleaseLevel, ReleaseVersion
 
 
@@ -93,42 +93,40 @@ class ReleaseCommand(Command):  # type: ignore
                 ):
                 return
 
-            self.set_version(poetry, releaser.next_version.text)
-
             templates = Template(
                 package_name=poetry.package.name,
+                prev_version=releaser.version.text,
                 version=releaser.next_version.text,
-                next_version="",
+                next_version=releaser.next_pre_version.text
+                             if releaser.next_pre_version else "",
                 date=datetime.today().strftime("%Y-%m-%d"),
             )
 
             replacer = Replacer(templates, settings)
-
-            (tag_name,
-             tag_message,
-             commit_message,
-             next_commit_message) = replacer.generate_messages()
-
             replacer.update_replacements()
+            message = replacer.generate_messages()
+            self.set_version(poetry, releaser.next_version.text)
 
             # GIT RELEASE COMMIT
-            git.create_commit(commit_message)
+            git.create_commit(message.release_commit)
             if not settings.disable_push:
                 git.push_commit()
 
             # GIT TAG
-            if not settings.disable_tag and releaser.next_version.is_unstable():
-                tag_message = ""
-                git.create_tag(tag_name, tag_message)
+            if not settings.disable_tag and releaser.next_version.is_stable():
+                git.create_tag(
+                    message.tag_name,
+                    message.tag_message,
+                )
                 if not settings.disable_push:
-                    git.push_tag(tag_name)
+                    git.push_tag(message.tag_name)
 
             # GIT NEXT ITERATION COMMIT
-            if not settings.disable_dev and releaser.next_version.is_unstable():
+            if not settings.disable_dev and releaser.next_version.is_stable():
                 pre_release = releaser.next_pre_version
                 if pre_release is not None:
                     self.set_version(poetry, pre_release.text)
-                    git.create_commit("")
+                    git.create_commit(message.post_release_commit)
                     if not settings.disable_push:
                         git.push_commit()
 

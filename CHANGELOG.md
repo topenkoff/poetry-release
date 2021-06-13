@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - git tag push
 - date template
+- update templates
 
 ## [0.2.1] - date
 

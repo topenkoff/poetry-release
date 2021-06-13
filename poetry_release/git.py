@@ -74,7 +74,7 @@ class Git:
             data = data.replace("'", "").split("\n")
             data = list(filter(None, data))
             for pair in data:
-                branch, remote = data.split(":")
+                branch, remote = pair.split(":")
                 if branch == current_branch:
                     return remote
         return None

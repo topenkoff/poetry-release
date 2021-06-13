@@ -18,7 +18,6 @@ class ReleaseLevel(str, Enum):
     RC = "rc"
     RELEASE = "release"
 
-
     @classmethod
     def parse(cls, version: str) -> "ReleaseLevel":
         if version == cls.MAJOR:
@@ -41,6 +40,7 @@ class ReleaseLevel(str, Enum):
                 "major, minor, patch, release, rc, beta, alpha. "
                 "Or set <release_level> empty"
             )
+
 
 class ReleaseVersion:
 
