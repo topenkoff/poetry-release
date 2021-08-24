@@ -66,12 +66,14 @@ Poetry-release supports templates to build releases. Templates could be used in 
 | `date`         | The current date in `%Y-%m-%d` format              |
 
 ### Release settings
-These settings allow you to disable part of the functionality. They can be set either in `pyproject.toml` or in CLI like flag.
-| Settings       | Default | Description                     |
-|----------------|---------|---------------------------------|
-| `disable-push` | false   | Don't do git push               | 
-| `disable-tag`  | false   | Don't do git tag                |
-| `disable-dev`  | false   | Skip bump version after release |
+These settings allow you to disable part of the functionality. They can be set either in `pyproject.toml` or in CLI like flag. Settings from CLI have a higher priority
+| Settings       | Default |        CLI         |     `pyproject.toml`     | Description                     |
+|----------------|---------|--------------------|--------------------------|---------------------------------|
+| `disable-push` | false   | :heavy_check_mark: | :heavy_check_mark:       | Don't do git push               |
+| `disable-tag`  | false   | :heavy_check_mark: | :heavy_check_mark:       | Don't do git tag                |
+| `disable-dev`  | false   | :heavy_check_mark: | :heavy_check_mark:       | Skip bump version after release |
+| `sign-commit`  | false   | :heavy_check_mark: | :heavy_multiplication_x: | Signed commit                   |
+| `sign-tag`     | false   | :heavy_check_mark: | :heavy_multiplication_x: | Signed tag                      |
 
 #### Default git messages
 * Tag name - `{version}`

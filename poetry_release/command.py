@@ -1,11 +1,8 @@
-from enum import Enum
 from datetime import datetime
 
 from cleo.commands.command import Command
 from cleo.helpers import argument, option
-from poetry.core.semver.version import Version
 from poetry.core.version.exceptions import InvalidVersion
-from poetry.core.version.pep440 import ReleaseTag
 from poetry.poetry import Poetry
 
 from poetry_release.git import Git
@@ -61,9 +58,9 @@ class ReleaseCommand(Command):  # type: ignore
      major, minor, patch, release, rc, beta, alpha
   """
 
-
     def handle(self) -> None:
         try:
+            settings = Settings(self)
             git = Git()
             if not git.repo_exists:
                 self.line(
@@ -90,7 +87,7 @@ class ReleaseCommand(Command):  # type: ignore
             if not self.confirm(
                     f'Release {poetry.package.name} {releaser.next_version.text}?',
                     False, '(?i)^(y|j)'
-                ):
+            ):
                 return
 
             templates = Template(
@@ -108,7 +105,10 @@ class ReleaseCommand(Command):  # type: ignore
             self.set_version(poetry, releaser.next_version.text)
 
             # GIT RELEASE COMMIT
-            git.create_commit(message.release_commit)
+            git.create_commit(
+                message.release_commit,
+                settings.sign_commit,
+            )
             if not settings.disable_push:
                 git.push_commit()
 
@@ -117,6 +117,7 @@ class ReleaseCommand(Command):  # type: ignore
                 git.create_tag(
                     message.tag_name,
                     message.tag_message,
+                    settings.sign_tag,
                 )
                 if not settings.disable_push:
                     git.push_tag(message.tag_name)
@@ -126,7 +127,10 @@ class ReleaseCommand(Command):  # type: ignore
                 pre_release = releaser.next_pre_version
                 if pre_release is not None:
                     self.set_version(poetry, pre_release.text)
-                    git.create_commit(message.post_release_commit)
+                    git.create_commit(
+                        message.post_release_commit,
+                        settings.sign_commit,
+                    )
                     if not settings.disable_push:
                         git.push_commit()
 

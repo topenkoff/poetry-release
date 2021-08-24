@@ -1,7 +1,6 @@
 import re
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
-from datetime import datetime
 
 from poetry_release.settings import Settings
 
@@ -55,7 +54,6 @@ class GitMessages:
 
 
 class Replacer:
-    
     def __init__(
         self,
         template: Template,
@@ -84,8 +82,8 @@ class Replacer:
         if self.settings.tag_name is not None:
             messages.tag_name = self.settings.tag_name
 
-        #changelog = self.get_changelog()
-        #if changelog is not None:
+        # changelog = self.get_changelog()
+        # if changelog is not None:
         #    messages.tag_message = changelog
         if self.settings.tag_message is not None:
             messages.tag_message = self.settings.tag_message
@@ -94,16 +92,16 @@ class Replacer:
 
         return messages
 
-    #def get_changelog(self) -> Optional[str]:
-    #    with open("CHANGELOG.md", "r") as read_changelog:
-    #        content = read_changelog.read()
-    #        version = self.template.version
-    #        pattern = re.compile(
-    #            "(?:##.\[%s\].-.\d{4}-\d{2}-\d{2})(\n###.*?)(\n\n##.\[|$)" % version,
-    #            flags=re.S
-    #        )
-    #        result = pattern.search(content)
-    #        if result is not None:
-    #            return result.group(1)
-    #        else:
-    #            return None
+    # def get_changelog(self) -> Optional[str]:
+    #     with open("CHANGELOG.md", "r") as read_changelog:
+    #         content = read_changelog.read()
+    #         version = self.template.version
+    #         pattern = re.compile(
+    #             "(?:##.\[%s\].-.\d{4}-\d{2}-\d{2})(\n###.*?)(\n\n##.\[|$)" % version,
+    #             flags=re.S
+    #         )
+    #         result = pattern.search(content)
+    #         if result is not None:
+    #             return result.group(1)
+    #         else:
+    #             return None

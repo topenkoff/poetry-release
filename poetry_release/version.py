@@ -45,11 +45,11 @@ class ReleaseLevel(str, Enum):
 class ReleaseVersion:
 
     def __init__(
-            self, 
-            version: Version, 
-            release_level: ReleaseLevel
-        ) -> None:
-        self.version = version 
+        self,
+        version: Version,
+        release_level: ReleaseLevel,
+    ) -> None:
+        self.version = version
         self.release_level = release_level
 
     def __increment_version(self) -> Version:
@@ -79,7 +79,7 @@ class ReleaseVersion:
             if self.version.is_unstable() and \
                 self.version.pre.phase in (
                     ReleaseLevel.RC, ReleaseLevel.BETA
-                ):
+            ):
                 raise UpdateVersionError(
                     "Prohibited to downgrade version: "
                     "major > minor > patch > release > rc > beta > alpha"
@@ -98,7 +98,7 @@ class ReleaseVersion:
         else:
             pre = ReleaseTag(self.release_level, 1)
         return Version(self.version.epoch, self.version.release, pre)
-    
+
     @property
     def current_version(self) -> Version:
         return self.version
@@ -113,4 +113,3 @@ class ReleaseVersion:
         if next_version.is_unstable():
             return None
         return next_version.next_patch().first_prerelease()
- 

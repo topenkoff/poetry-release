@@ -20,16 +20,24 @@ class Git:
         else:
             return True
 
+    def create_tag(
+            self,
+            tag_version: str,
+            tag_message: str,
+            sign: bool,
+    ) -> None:
+        command = ["git", "tag", "-a", f"{tag_version}"]
+        if sign:
+            command += ["-S"]
+        command += ["-m", f"{tag_message}"]
+        subprocess.run(command)
 
-    def create_tag(self, tag_version: str, tag_message: str) -> None:
-        subprocess.run(
-            ["git", "tag", "-a", f"{tag_version}", "-m", f"{tag_message}"],
-        )
-
-    def create_commit(self, commit_message: str) -> None:
-        subprocess.run(
-            ["git", "commit", "-a", "-m", f"{commit_message}"]
-        )
+    def create_commit(self, commit_message: str, sign: bool) -> None:
+        command = ["git", "commit", "-a", "-m"]
+        if sign:
+            command += ["-S"]
+        command += [f"{commit_message}"]
+        subprocess.run(command)
 
     def push_commit(self) -> None:
         subprocess.run(["git", "push"])
@@ -40,10 +48,9 @@ class Git:
             return
         subprocess.run(["git", "push", f"{remote}", f"{tag_version}"])
 
-
     def _git_exists(self) -> bool:
         result = subprocess.run(
-            ["[", "-d" ,".git", "]"],
+            ["[", "-d", ".git", "]"],
             stdout=subprocess.PIPE
         )
         if result.returncode == 0:
@@ -67,7 +74,11 @@ class Git:
             "--format='%(refname:short):%(upstream:remotename)'",
             'refs/heads'
         ]
-        with subprocess.Popen(args, stdout=subprocess.PIPE, universal_newlines=True) as rem_process:
+        with subprocess.Popen(
+            args,
+            stdout=subprocess.PIPE,
+            universal_newlines=True
+        ) as rem_process:
             data, err = rem_process.communicate()
             if err is not None:
                 return None
@@ -78,4 +89,3 @@ class Git:
                 if branch == current_branch:
                     return remote
         return None
-
