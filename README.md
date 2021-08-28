@@ -1,6 +1,12 @@
 # Poetry release
 
-[![CI](https://github.com/topenkoff/poetry-release/actions/workflows/tests.yml/badge.svg)](https://github.com/topenkoff/poetry-release/actions?query=workflow)
+[![CI]][workflow]
+[![PyPi Package]][pypi.org]
+
+[CI]: https://github.com/topenkoff/poetry-release/actions/workflows/tests.yml/badge.svg
+[workflow]: https://github.com/topenkoff/poetry-release/actions?query=workflow
+[PyPi Package]: https://img.shields.io/pypi/v/poetry-release?color=%2334D058&label=pypi%20package
+[pypi.org]: https://pypi.org/project/poetry-release/
 
 Release managment plugin for poetry
 
