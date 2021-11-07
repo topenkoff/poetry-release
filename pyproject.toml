@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "poetry-release"
-version = "0.2.4-alpha.0"
+version = "0.3.0"
 description = "Plugin for release management in projects based on Poetry"
 license = "MIT"
 authors = ["Denis Kayshev <topenkoff@gmail.com>"]
