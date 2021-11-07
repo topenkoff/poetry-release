@@ -2,13 +2,16 @@
 
 [![CI]][workflow]
 [![PyPi Package]][pypi.org]
+[![Downloads]][pepy.tech]
 
 [CI]: https://github.com/topenkoff/poetry-release/actions/workflows/tests.yml/badge.svg
 [workflow]: https://github.com/topenkoff/poetry-release/actions?query=workflow
 [PyPi Package]: https://img.shields.io/pypi/v/poetry-release?color=%2334D058&label=pypi%20package
 [pypi.org]: https://pypi.org/project/poetry-release/
+[Downloads]: https://pepy.tech/badge/poetry-release
+[pepy.tech]: https://pepy.tech/project/poetry-release
 
-Release managment plugin for poetry
+Release managment plugin for [poetry](https://github.com/python-poetry/poetry)
 
 *The project is currently under development and is not ready for use in production.*
 
@@ -20,7 +23,7 @@ Inspired by [cargo-release](https://github.com/sunng87/cargo-release)
 - [x] [Changelog](https://keepachangelog.com/en/1.0.0/) support
 
 ## Installation
-**Note:** Plugins work at Poetry with version 1.2.0a1 or above.
+**Note:** Plugins work at Poetry with version 1.2.0a2 or above.
 ```bash
 poetry add poetry-release
 ```

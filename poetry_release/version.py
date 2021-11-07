@@ -67,7 +67,7 @@ class ReleaseVersion:
 
         elif self.release_level is ReleaseLevel.BETA:
             if self.version.is_unstable() \
-                and self.version.pre.phase == ReleaseLevel.RC:
+                    and self.version.pre.phase == ReleaseLevel.RC:
                 raise UpdateVersionError(
                     "Prohibited to downgrade version: "
                     "major > minor > patch > release > rc > beta > alpha"

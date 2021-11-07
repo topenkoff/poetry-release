@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Any, List, Optional
+from typing import Dict
 from dataclasses import dataclass, field
 
 from poetry_release.settings import Settings
@@ -35,8 +35,8 @@ class Replacement:
 @dataclass
 class GitMessages:
     tag_name: str = field(default="{version}")
-    tag_message: str = field(default="Released {package_name} {version}")
-    release_commit: str = field(default="Released {package_name} {version}")
+    tag_message: str = field(default="Release {package_name} {version}")
+    release_commit: str = field(default="Release {package_name} {version}")
     post_release_commit: str = field(
         default=(
             "Starting {package_name}'s next development "

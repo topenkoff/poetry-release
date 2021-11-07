@@ -55,19 +55,20 @@ class ReleaseCommand(Command):  # type: ignore
   The release command helps you to control your project version.
   It allows bump version, create tags and commit and push them 
   to project repository. Supported release levels are:
-     major, minor, patch, release, rc, beta, alpha
+  major, minor, patch, release, rc, beta, alpha
   """
 
     def handle(self) -> None:
         try:
             settings = Settings(self)
-            git = Git()
-            if not git.repo_exists:
+            git = Git(settings)
+            if not git.repo_exists():
                 self.line(
                     "<fg=yellow>Git repository not found. "
                     "Please initialize repository in your project"
                 )
                 return
+
             if git.has_modified():
                 self.line(
                     "<fg=yellow>There are uncommitted changes "
@@ -77,17 +78,19 @@ class ReleaseCommand(Command):  # type: ignore
 
             poetry = self.application.poetry
             next_release = ReleaseLevel.parse(self.argument("level"))
-            settings = Settings(self)
-
             releaser = ReleaseVersion(
                 poetry.package.version,
                 next_release,
             )
 
             if not self.confirm(
-                    f'Release {poetry.package.name} {releaser.next_version.text}?',
-                    False, '(?i)^(y|j)'
+                f'Release {poetry.package.name} {releaser.next_version.text}?',
+                False, '(?i)^(y|j)'
             ):
+                return
+
+            if releaser.version.text == releaser.next_version.text:
+                self.line("<fg=yellow> Version doesn't changed</>")
                 return
 
             templates = Template(
@@ -95,7 +98,7 @@ class ReleaseCommand(Command):  # type: ignore
                 prev_version=releaser.version.text,
                 version=releaser.next_version.text,
                 next_version=releaser.next_pre_version.text
-                             if releaser.next_pre_version else "",
+                if releaser.next_pre_version else "",
                 date=datetime.today().strftime("%Y-%m-%d"),
             )
 
@@ -105,32 +108,22 @@ class ReleaseCommand(Command):  # type: ignore
             self.set_version(poetry, releaser.next_version.text)
 
             # GIT RELEASE COMMIT
-            git.create_commit(
-                message.release_commit,
-                settings.sign_commit,
-            )
+            git.create_commit(message.release_commit)
             if not settings.disable_push:
                 git.push_commit()
 
             # GIT TAG
-            if not settings.disable_tag and releaser.next_version.is_stable():
-                git.create_tag(
-                    message.tag_name,
-                    message.tag_message,
-                    settings.sign_tag,
-                )
+            if not settings.disable_tag:
+                git.create_tag(message.tag_name, message.tag_message)
                 if not settings.disable_push:
                     git.push_tag(message.tag_name)
 
             # GIT NEXT ITERATION COMMIT
-            if not settings.disable_dev and releaser.next_version.is_stable():
+            if not settings.disable_dev:
                 pre_release = releaser.next_pre_version
                 if pre_release is not None:
                     self.set_version(poetry, pre_release.text)
-                    git.create_commit(
-                        message.post_release_commit,
-                        settings.sign_commit,
-                    )
+                    git.create_commit(message.post_release_commit)
                     if not settings.disable_push:
                         git.push_commit()
 
@@ -150,4 +143,3 @@ class ReleaseCommand(Command):  # type: ignore
 
 def release_factory() -> ReleaseCommand:
     return ReleaseCommand()
-
