@@ -26,12 +26,12 @@ Features
 Installation
 ------------
 
-**Note:** Plugins work at Poetry with version 1.2.0a2 or above.
+**Note:** Plugins work at Poetry with version 1.2.0 or above.
 
 
 .. code-block:: bash
 
-    poetry plugin add poetry-release
+    poetry self add poetry-release
 
 
 Usage
