@@ -3,7 +3,7 @@ from typing import Optional
 
 from poetry.core.semver.version import Version
 from poetry.core.version.exceptions import InvalidVersion
-from poetry.core.version.pep440 import ReleaseTag
+from poetry.core.version.pep440.segments import ReleaseTag
 
 from poetry_release.exception import UpdateVersionError
 
