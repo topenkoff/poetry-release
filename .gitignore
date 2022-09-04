@@ -2,3 +2,5 @@
 dist/
 poetry.lock
 Makefile
+__pycache__/
+.python-version

@@ -14,7 +14,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.7"
-poetry = "^1.2.0a2"
+poetry = "^1.2.0"
 
 [tool.poetry.plugins."poetry.application.plugin"]
 poetry-release = "poetry_release.plugin:ReleasePlugin"
