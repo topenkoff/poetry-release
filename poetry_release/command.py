@@ -5,7 +5,7 @@ from cleo.helpers import argument, option
 from poetry.core.version.exceptions import InvalidVersion
 from poetry.poetry import Poetry
 
-from poetry_release.git import Git
+from poetry_release import git
 from poetry_release.exception import UpdateVersionError
 from poetry_release.replace import Template, Replacer
 from poetry_release.settings import Settings
@@ -39,7 +39,7 @@ class ReleaseCommand(Command):  # type: ignore
         ),
         option(
             "disable-tag",
-            description="Disable creating git tags",
+            description="Disable create git tags",
             flag=True,
             value_required=False,
         ),
@@ -61,7 +61,6 @@ class ReleaseCommand(Command):  # type: ignore
     def handle(self) -> None:
         try:
             settings = Settings(self)
-            git = Git(settings)
             if not git.repo_exists():
                 self.line(
                     "<fg=yellow>Git repository not found. "
@@ -108,13 +107,13 @@ class ReleaseCommand(Command):  # type: ignore
             self.set_version(poetry, releaser.next_version.text)
 
             # GIT RELEASE COMMIT
-            git.create_commit(message.release_commit)
+            git.create_commit(message.release_commit, settings.sign_commit)
             if not settings.disable_push:
                 git.push_commit()
 
             # GIT TAG
             if not settings.disable_tag:
-                git.create_tag(message.tag_name, message.tag_message)
+                git.create_tag(message.tag_name, message.tag_message, settings.sign_tag)
                 if not settings.disable_push:
                     git.push_tag(message.tag_name)
 
@@ -123,7 +122,7 @@ class ReleaseCommand(Command):  # type: ignore
                 pre_release = releaser.next_pre_version
                 if pre_release is not None:
                     self.set_version(poetry, pre_release.text)
-                    git.create_commit(message.post_release_commit)
+                    git.create_commit(message.post_release_commit, settings.sign_commit)
                     if not settings.disable_push:
                         git.push_commit()
 
