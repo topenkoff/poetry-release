@@ -3,7 +3,7 @@ Poetry release
 
 |CI| |PyPi Package|
 
-.. |CI| image:: https://github.com/topenkoff/poetry-release/actions/workflows/tests.yml/badge.svg
+.. |CI| image:: https://github.com/topenkoff/poetry-release/actions/workflows/ci.yml/badge.svg
    :target: https://github.com/topenkoff/poetry-release/actions?query=workflow
 .. |PyPi Package| image:: https://img.shields.io/pypi/v/poetry-release?color=%2334D058&label=pypi%20package
    :target: https://pypi.org/project/poetry-release/
@@ -26,7 +26,7 @@ Features
 Installation
 ------------
 
-**Note:** Plugins work at Poetry with version 1.2.0a2 or above.
+**Note:** Plugins work at Poetry with version 1.2.0 or above.
 
 
 .. code-block:: bash

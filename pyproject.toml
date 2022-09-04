@@ -29,7 +29,22 @@ sign-commit = true
 sign-tag = true
 
 [tool.poetry.dev-dependencies]
-mypy = "^0.812"
+mypy = "^0.971"
+isort = "^5.10"
+flake8 = "^3.9"
+black = "^22.8"
+
+[tool.mypy]
+files = "poetry_release"
+strict = true
+ignore_missing_imports = true
+
+[tool.black]
+line-length = 79
+
+[tool.isort]
+profile = "black"
+atomic = true
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
