@@ -2,7 +2,7 @@ import re
 from typing import Dict
 from dataclasses import dataclass, field
 
-from poetry_release.settings import Settings
+from poetry_release.config import Config
 
 
 @dataclass
@@ -57,13 +57,13 @@ class Replacer:
     def __init__(
         self,
         template: Template,
-        settings: Settings
+        config: Config
     ) -> None:
         self.template = template
-        self.settings = settings
+        self.config = config
         self.replacements = [
             Replacement(**r)
-            for r in self.settings.release_replacements
+            for r in self.config.release_replacements
         ]
 
     def update_replacements(self) -> None:
@@ -73,20 +73,20 @@ class Replacer:
     def generate_messages(self) -> GitMessages:
         messages = GitMessages()
 
-        if self.settings.release_commit_message is not None:
-            messages.release_commit = self.settings.release_commit_message
+        if self.config.release_commit_message is not None:
+            messages.release_commit = self.config.release_commit_message
 
-        if self.settings.post_release_commit_message is not None:
-            messages.post_release_commit = self.settings.post_release_commit_message
+        if self.config.post_release_commit_message is not None:
+            messages.post_release_commit = self.config.post_release_commit_message
 
-        if self.settings.tag_name is not None:
-            messages.tag_name = self.settings.tag_name
+        if self.config.tag_name is not None:
+            messages.tag_name = self.config.tag_name
 
         # changelog = self.get_changelog()
         # if changelog is not None:
         #    messages.tag_message = changelog
-        if self.settings.tag_message is not None:
-            messages.tag_message = self.settings.tag_message
+        if self.config.tag_message is not None:
+            messages.tag_message = self.config.tag_message
 
         messages.fill_template(self.template)
 

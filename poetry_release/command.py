@@ -6,9 +6,9 @@ from poetry.core.version.exceptions import InvalidVersion
 from poetry.poetry import Poetry
 
 from poetry_release import git
+from poetry_release.config import Config
 from poetry_release.exception import UpdateVersionError
 from poetry_release.replace import Template, Replacer
-from poetry_release.settings import Settings
 from poetry_release.version import ReleaseLevel, ReleaseVersion
 
 
@@ -60,7 +60,35 @@ class ReleaseCommand(Command):  # type: ignore
 
     def handle(self) -> None:
         try:
-            settings = Settings(self)
+
+            # Init config
+            cfg = Config()
+
+            pyproject = self.application \
+                .poetry.file.read().get("tool", {}).get("poetry-release", {})
+            pyproject_cfg = Config(
+                disable_push=pyproject.get("disable-push"),
+                disable_tag=pyproject.get("disable-tag"),
+                disable_dev=pyproject.get("disable_dev"),
+                tag_name=pyproject.get("tag-name"),
+                tag_message=pyproject.get("tag-message"),
+                release_commit_message=pyproject.get("release-commit-message"),
+                post_release_commit_message=pyproject.get("post-release-commit-message"),
+                release_replacements=pyproject.get("release-replacements"),
+                sign_commit=pyproject.get("sign-commit"),
+                sign_tag=pyproject.get("sign-tag"),
+            )
+            cfg.update(pyproject_cfg)
+
+            cli_cfg = Config(
+                disable_push=self.option("disable-push"),
+                disable_tag=self.option("disable-tag"),
+                disable_dev=self.option("disable-dev"),
+            )
+
+            cfg.update(cli_cfg)
+
+            # Check git
             if not git.repo_exists():
                 self.line(
                     "<fg=yellow>Git repository not found. "
@@ -101,29 +129,36 @@ class ReleaseCommand(Command):  # type: ignore
                 date=datetime.today().strftime("%Y-%m-%d"),
             )
 
-            replacer = Replacer(templates, settings)
+            replacer = Replacer(templates, cfg)
             replacer.update_replacements()
             message = replacer.generate_messages()
             self.set_version(poetry, releaser.next_version.text)
 
-            # GIT RELEASE COMMIT
-            git.create_commit(message.release_commit, settings.sign_commit)
-            if not settings.disable_push:
+            # Git release commit
+            git.create_commit(message.release_commit, cfg.sign_commit)
+            if not cfg.disable_push:
                 git.push_commit()
 
-            # GIT TAG
-            if not settings.disable_tag:
-                git.create_tag(message.tag_name, message.tag_message, settings.sign_tag)
-                if not settings.disable_push:
+            # Git tag
+            if not cfg.disable_tag:
+                git.create_tag(
+                    message.tag_name,
+                    message.tag_message,
+                    cfg.sign_tag,
+                )
+                if not cfg.disable_push:
                     git.push_tag(message.tag_name)
 
-            # GIT NEXT ITERATION COMMIT
-            if not settings.disable_dev:
+            # Git next iteration commit
+            if not cfg.disable_dev:
                 pre_release = releaser.next_pre_version
                 if pre_release is not None:
                     self.set_version(poetry, pre_release.text)
-                    git.create_commit(message.post_release_commit, settings.sign_commit)
-                    if not settings.disable_push:
+                    git.create_commit(
+                        message.post_release_commit,
+                        cfg.sign_commit,
+                    )
+                    if not cfg.disable_push:
                         git.push_commit()
 
         except RuntimeError as e:
