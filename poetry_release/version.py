@@ -3,7 +3,7 @@ from typing import Optional
 
 from poetry.core.semver.version import Version
 from poetry.core.version.exceptions import InvalidVersion
-from poetry.core.version.pep440 import ReleaseTag
+from poetry.core.version.pep440.segments import ReleaseTag
 
 from poetry_release.exception import UpdateVersionError
 
@@ -43,7 +43,6 @@ class ReleaseLevel(str, Enum):
 
 
 class ReleaseVersion:
-
     def __init__(
         self,
         version: Version,
@@ -66,8 +65,10 @@ class ReleaseVersion:
             return self.__get_release_tag_version()
 
         elif self.release_level is ReleaseLevel.BETA:
-            if self.version.is_unstable() \
-                    and self.version.pre.phase == ReleaseLevel.RC:
+            if (
+                self.version.is_unstable()
+                and self.version.pre.phase == ReleaseLevel.RC
+            ):
                 raise UpdateVersionError(
                     "Prohibited to downgrade version: "
                     "major > minor > patch > release > rc > beta > alpha"
@@ -76,9 +77,9 @@ class ReleaseVersion:
                 return self.__get_release_tag_version()
 
         elif self.release_level is ReleaseLevel.ALPHA:
-            if self.version.is_unstable() and \
-                self.version.pre.phase in (
-                    ReleaseLevel.RC, ReleaseLevel.BETA
+            if self.version.is_unstable() and self.version.pre.phase in (
+                ReleaseLevel.RC,
+                ReleaseLevel.BETA,
             ):
                 raise UpdateVersionError(
                     "Prohibited to downgrade version: "
@@ -90,8 +91,10 @@ class ReleaseVersion:
             return Version(self.version.epoch, self.version.release)
 
     def __get_release_tag_version(self) -> Version:
-        if self.version.is_unstable() and \
-                self.version.pre.phase != self.release_level:
+        if (
+            self.version.is_unstable()
+            and self.version.pre.phase != self.release_level
+        ):
             pre = ReleaseTag(self.release_level, 1)
         elif self.version.is_unstable():
             pre = self.version.pre.next()

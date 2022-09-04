@@ -8,7 +8,7 @@ from poetry.poetry import Poetry
 from poetry_release import git
 from poetry_release.config import Config
 from poetry_release.exception import UpdateVersionError
-from poetry_release.replace import Template, Replacer
+from poetry_release.replace import Replacer, Template
 from poetry_release.version import ReleaseLevel, ReleaseVersion
 
 
@@ -16,10 +16,7 @@ class ReleaseCommand(Command):  # type: ignore
 
     name = "release"
 
-    description = (
-        "Plugin for release management in projects "
-        "based on Poetry"
-    )
+    description = "Plugin for release management in projects based on Poetry"
 
     arguments = [
         argument(
@@ -48,24 +45,26 @@ class ReleaseCommand(Command):  # type: ignore
             description="Disable bump version after stable release",
             flag=True,
             value_required=False,
-        )
+        ),
     ]
 
     help = """\
-  The release command helps you to control your project version.
-  It allows bump version, create tags and commit and push them 
-  to project repository. Supported release levels are:
-  major, minor, patch, release, rc, beta, alpha
-  """
+The release command helps you to control your project version.
+It allows bump version, create tags and commit and push them
+to project repository. Supported release levels are:
+major, minor, patch, release, rc, beta, alpha.
+"""
 
     def handle(self) -> None:
         try:
-
             # Init config
             cfg = Config()
 
-            pyproject = self.application \
-                .poetry.file.read().get("tool", {}).get("poetry-release", {})
+            pyproject = (
+                self.application.poetry.file.read()
+                .get("tool", {})
+                .get("poetry-release", {})
+            )
             pyproject_cfg = Config(
                 disable_push=pyproject.get("disable-push"),
                 disable_tag=pyproject.get("disable-tag"),
@@ -73,7 +72,9 @@ class ReleaseCommand(Command):  # type: ignore
                 tag_name=pyproject.get("tag-name"),
                 tag_message=pyproject.get("tag-message"),
                 release_commit_message=pyproject.get("release-commit-message"),
-                post_release_commit_message=pyproject.get("post-release-commit-message"),
+                post_release_commit_message=pyproject.get(
+                    "post-release-commit-message"
+                ),
                 release_replacements=pyproject.get("release-replacements"),
                 sign_commit=pyproject.get("sign-commit"),
                 sign_tag=pyproject.get("sign-tag"),
@@ -111,8 +112,9 @@ class ReleaseCommand(Command):  # type: ignore
             )
 
             if not self.confirm(
-                f'Release {poetry.package.name} {releaser.next_version.text}?',
-                False, '(?i)^(y|j)'
+                f"Release {poetry.package.name} {releaser.next_version.text}?",
+                False,
+                "(?i)^(y|j)",
             ):
                 return
 
@@ -125,7 +127,8 @@ class ReleaseCommand(Command):  # type: ignore
                 prev_version=releaser.version.text,
                 version=releaser.next_version.text,
                 next_version=releaser.next_pre_version.text
-                if releaser.next_pre_version else "",
+                if releaser.next_pre_version
+                else "",
                 date=datetime.today().strftime("%Y-%m-%d"),
             )
 

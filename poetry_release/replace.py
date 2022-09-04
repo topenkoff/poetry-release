@@ -1,6 +1,6 @@
 import re
-from typing import Dict
 from dataclasses import dataclass, field
+from typing import Dict
 
 from poetry_release.config import Config
 
@@ -45,25 +45,20 @@ class GitMessages:
     )
 
     def fill_template(self, template: Template) -> None:
-        for field_name in self.__dataclass_fields__.keys():    # type: ignore
+        for field_name in self.__dataclass_fields__.keys():
             setattr(
                 self,
                 field_name,
-                self.__getattribute__(field_name).format_map(template.dict())
+                self.__getattribute__(field_name).format_map(template.dict()),
             )
 
 
 class Replacer:
-    def __init__(
-        self,
-        template: Template,
-        config: Config
-    ) -> None:
+    def __init__(self, template: Template, config: Config) -> None:
         self.template = template
         self.config = config
         self.replacements = [
-            Replacement(**r)
-            for r in self.config.release_replacements
+            Replacement(**r) for r in self.config.release_replacements
         ]
 
     def update_replacements(self) -> None:
@@ -77,7 +72,9 @@ class Replacer:
             messages.release_commit = self.config.release_commit_message
 
         if self.config.post_release_commit_message is not None:
-            messages.post_release_commit = self.config.post_release_commit_message
+            messages.post_release_commit = (
+                self.config.post_release_commit_message
+            )
 
         if self.config.tag_name is not None:
             messages.tag_name = self.config.tag_name
@@ -97,8 +94,9 @@ class Replacer:
     #         content = read_changelog.read()
     #         version = self.template.version
     #         pattern = re.compile(
-    #             "(?:##.\[%s\].-.\d{4}-\d{2}-\d{2})(\n###.*?)(\n\n##.\[|$)" % version,
-    #             flags=re.S
+    #             "(?:##.\[%s\].-.\d{4}-\d{2}-\d{2})(\n###.*?)(\n\n##.\[|$)"
+    #             % version,
+    #             flags=re.S,
     #         )
     #         result = pattern.search(content)
     #         if result is not None:

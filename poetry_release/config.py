@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 
 class Config:
-
     def __init__(
         self,
         disable_push: Optional[bool] = None,
@@ -31,33 +30,23 @@ class Config:
 
     @property
     def disable_push(self) -> bool:
-        return self._disable_push \
-            if self._disable_push is not None \
-            else False
+        return self._disable_push if self._disable_push is not None else False
 
     @property
     def disable_tag(self) -> bool:
-        return self._disable_tag \
-            if self._disable_tag is not None \
-            else False
+        return self._disable_tag if self._disable_tag is not None else False
 
     @property
     def disable_dev(self) -> bool:
-        return self._disable_dev \
-            if self._disable_dev is not None \
-            else False
+        return self._disable_dev if self._disable_dev is not None else False
 
     @property
     def sign_commit(self) -> bool:
-        return self._sign_commit \
-            if self._sign_commit is not None \
-            else False
+        return self._sign_commit if self._sign_commit is not None else False
 
     @property
     def sign_tag(self) -> bool:
-        return self._sign_tag \
-            if self._sign_tag is not None \
-            else False
+        return self._sign_tag if self._sign_tag is not None else False
 
     @property
     def tag_name(self) -> Optional[str]:
@@ -77,9 +66,11 @@ class Config:
 
     @property
     def release_replacements(self) -> List[Dict[str, str]]:
-        return self._release_replacements \
-            if self._release_replacements is not None \
+        return (
+            self._release_replacements
+            if self._release_replacements is not None
             else []
+        )
 
     def update(self, cfg: Config) -> None:
         for key, value in cfg.__dict__.items():
