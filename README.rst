@@ -28,11 +28,17 @@ Installation
 
 **Note:** Plugins work at Poetry with version 1.2.0 or above.
 
+You can install plugin via ``poetry``
 
 .. code-block:: bash
 
-    poetry plugin add poetry-release
+    poetry self add poetry-release
 
+or via ``pipx inject``
+
+.. code-block:: bash
+
+    pipx inject poetry poetry-release
 
 Usage
 -----
