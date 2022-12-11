@@ -1,6 +1,11 @@
 from __future__ import annotations
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from cleo.commands.command import Command
+    from typing import Callable, Any
 
 
 class Config:
@@ -76,3 +81,28 @@ class Config:
         for key, value in cfg.__dict__.items():
             if value is not None:
                 self.__setattr__(key, value)
+
+    @staticmethod
+    def from_pyproject(pyproject: dict[str, Any]) -> Config:
+        return Config(
+            disable_push=pyproject.get("disable-push"),
+            disable_tag=pyproject.get("disable-tag"),
+            disable_dev=pyproject.get("disable_dev"),
+            tag_name=pyproject.get("tag-name"),
+            tag_message=pyproject.get("tag-message"),
+            release_commit_message=pyproject.get("release-commit-message"),
+            post_release_commit_message=pyproject.get(
+                "post-release-commit-message"
+            ),
+            release_replacements=pyproject.get("release-replacements"),
+            sign_commit=pyproject.get("sign-commit"),
+            sign_tag=pyproject.get("sign-tag"),
+        )
+
+    @staticmethod
+    def from_cli(cli: Callable[[str], Any]) -> Config:
+        return Config(
+            disable_push=cli("disable-push"),
+            disable_tag=cli("disable-tag"),
+            disable_dev=cli("disable-dev"),
+        )
