@@ -1,9 +1,12 @@
-from datetime import datetime
+from __future__ import annotations
 
-from cleo.commands.command import Command
+from datetime import datetime
+from typing import TYPE_CHECKING, cast
+
 from cleo.helpers import argument, option
+from poetry.console.commands.command import Command
 from poetry.core.version.exceptions import InvalidVersion
-from poetry.poetry import Poetry
+from tomlkit.toml_document import TOMLDocument
 
 from poetry_release import git
 from poetry_release.config import Config
@@ -12,7 +15,11 @@ from poetry_release.replace import Replacer, Template
 from poetry_release.version import ReleaseLevel, ReleaseVersion
 
 
-class ReleaseCommand(Command):  # type: ignore
+if TYPE_CHECKING:
+    from typing import Any
+
+
+class ReleaseCommand(Command):
 
     name = "release"
 
@@ -55,13 +62,13 @@ to project repository. Supported release levels are:
 major, minor, patch, release, rc, beta, alpha.
 """
 
-    def handle(self) -> None:
+    def handle(self) -> int:
         try:
             # Init config
             cfg = Config()
 
             pyproject = (
-                self.application.poetry.file.read()
+                self.poetry.file.read()
                 .get("tool", {})
                 .get("poetry-release", {})
             )
@@ -77,35 +84,34 @@ major, minor, patch, release, rc, beta, alpha.
                     "<fg=yellow>Git repository not found. "
                     "Please initialize repository in your project"
                 )
-                return
+                return 1
 
             if git.has_modified():
                 self.line(
                     "<fg=yellow>There are uncommitted changes "
                     "in the repository. Please make a commit</>"
                 )
-                return
+                return 1
 
-            poetry = self.application.poetry
             next_release = ReleaseLevel.parse(self.argument("level"))
             releaser = ReleaseVersion(
-                poetry.package.version,
+                self.poetry.package.version,
                 next_release,
             )
 
             if not self.confirm(
-                f"Release {poetry.package.name} {releaser.next_version.text}?",
+                f"Release {self.poetry.package.name} {releaser.next_version.text}?",
                 False,
                 "(?i)^(y|j)",
             ):
-                return
+                return 1
 
             if releaser.version.text == releaser.next_version.text:
                 self.line("<fg=yellow> Version doesn't changed</>")
-                return
+                return 1
 
             templates = Template(
-                package_name=poetry.package.name,
+                package_name=self.poetry.package.name,
                 prev_version=releaser.version.text,
                 version=releaser.next_version.text,
                 next_version=releaser.next_pre_version.text
@@ -117,7 +123,7 @@ major, minor, patch, release, rc, beta, alpha.
             replacer = Replacer(templates, cfg)
             replacer.update_replacements()
             message = replacer.generate_messages()
-            self.set_version(poetry, releaser.next_version.text)
+            self.set_version(releaser.next_version.text)
 
             # Git release commit
             git.create_commit(message.release_commit, cfg.sign_commit)
@@ -138,7 +144,7 @@ major, minor, patch, release, rc, beta, alpha.
             if not cfg.disable_dev:
                 pre_release = releaser.next_pre_version
                 if pre_release is not None:
-                    self.set_version(poetry, pre_release.text)
+                    self.set_version(pre_release.text)
                     git.create_commit(
                         message.post_release_commit,
                         cfg.sign_commit,
@@ -148,16 +154,20 @@ major, minor, patch, release, rc, beta, alpha.
 
         except RuntimeError as e:
             self.line(f"<fg=red>{e}</>")
+            return 1
         except InvalidVersion as e:
             self.line(f"<fg=yellow>{e}</>")
+            return 1
         except UpdateVersionError as e:
             self.line(f"<fg=yellow>{e}</>")
+            return 1
+        return 0
 
-    def set_version(self, poetry: Poetry, version: str) -> None:
-        content = poetry.file.read()
+    def set_version(self, version: str) -> None:
+        content: dict[str, Any] = self.poetry.file.read()
         poetry_content = content["tool"]["poetry"]
         poetry_content["version"] = version
-        poetry.file.write(content)
+        self.poetry.file.write(cast(TOMLDocument, content))
 
 
 def release_factory() -> ReleaseCommand:
