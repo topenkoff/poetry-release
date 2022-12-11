@@ -168,7 +168,3 @@ major, minor, patch, release, rc, beta, alpha.
         poetry_content = content["tool"]["poetry"]
         poetry_content["version"] = version
         self.poetry.file.write(cast(TOMLDocument, content))
-
-
-def release_factory() -> ReleaseCommand:
-    return ReleaseCommand()
