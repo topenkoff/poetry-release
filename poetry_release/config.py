@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
@@ -11,16 +11,16 @@ if TYPE_CHECKING:
 class Config:
     def __init__(
         self,
-        disable_push: Optional[bool] = None,
-        disable_tag: Optional[bool] = None,
-        disable_dev: Optional[bool] = None,
-        sign_commit: Optional[bool] = None,
-        sign_tag: Optional[bool] = None,
-        tag_name: Optional[str] = None,
-        tag_message: Optional[str] = None,
-        release_commit_message: Optional[str] = None,
-        post_release_commit_message: Optional[str] = None,
-        release_replacements: Optional[List[Dict[str, str]]] = None,
+        disable_push: bool | None = None,
+        disable_tag: bool | None = None,
+        disable_dev: bool | None = None,
+        sign_commit: bool | None = None,
+        sign_tag: bool | None = None,
+        tag_name: str | None = None,
+        tag_message: str | None = None,
+        release_commit_message: str | None = None,
+        post_release_commit_message: str | None = None,
+        release_replacements: list[dict[str, str]] | None = None,
     ) -> None:
         self._disable_push = disable_push
         self._disable_tag = disable_tag
@@ -54,23 +54,23 @@ class Config:
         return self._sign_tag if self._sign_tag is not None else False
 
     @property
-    def tag_name(self) -> Optional[str]:
+    def tag_name(self) -> str | None:
         return self._tag_name
 
     @property
-    def tag_message(self) -> Optional[str]:
+    def tag_message(self) -> str | None:
         return self._tag_message
 
     @property
-    def release_commit_message(self) -> Optional[str]:
+    def release_commit_message(self) -> str | None:
         return self._release_commit_message
 
     @property
-    def post_release_commit_message(self) -> Optional[str]:
+    def post_release_commit_message(self) -> str | None:
         return self._post_release_commit_message
 
     @property
-    def release_replacements(self) -> List[Dict[str, str]]:
+    def release_replacements(self) -> list[dict[str, str]]:
         return (
             self._release_replacements
             if self._release_replacements is not None

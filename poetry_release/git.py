@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import subprocess
-from typing import Optional
 
 
 def has_modified() -> bool:
@@ -48,7 +49,7 @@ def repo_exists() -> bool:
     return not result.returncode
 
 
-def __current_branch() -> Optional[str]:
+def __current_branch() -> str | None:
     args = ["git", "rev-parse", "--abbrev-ref", "HEAD"]
     with subprocess.Popen(
         args,
@@ -62,7 +63,7 @@ def __current_branch() -> Optional[str]:
         return branch
 
 
-def __get_remote() -> Optional[str]:
+def __get_remote() -> str | None:
     args = [
         "git",
         "for-each-ref",

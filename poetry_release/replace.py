@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import re
 from dataclasses import dataclass, field
-from typing import Dict
 
 from poetry_release.config import Config
 
@@ -13,7 +14,7 @@ class Template:
     next_version: str
     date: str
 
-    def dict(self) -> Dict[str, str]:
+    def dict(self) -> dict[str, str]:
         return self.__dict__
 
 
