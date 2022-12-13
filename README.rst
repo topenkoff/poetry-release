@@ -131,9 +131,9 @@ from CLI have a higher priority
 +------------------+---------+-----+--------------------+---------------------------------+
 | ``disable-dev``  | false   | yes | yes                | Skip bump version after release |
 +------------------+---------+-----+--------------------+---------------------------------+
-| ``sign-commit``  | false   | yes | no                 | Signed commit                   |
+| ``sign-commit``  | false   | no  | yes                | Signed commit                   |
 +------------------+---------+-----+--------------------+---------------------------------+
-| ``sign-tag``     | false   | yes | no                 | Signed tag                      |
+| ``sign-tag``     | false   | no  | yes                | Signed tag                      |
 +------------------+---------+-----+--------------------+---------------------------------+
 
 
