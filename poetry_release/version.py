@@ -66,7 +66,9 @@ class ReleaseVersion:
         elif self.release_level is ReleaseLevel.BETA:
             if (
                 self.version.is_unstable()
-                and self.version.pre.phase == ReleaseLevel.RC
+                # The type check is ignored because
+                # phase existence checked in `is_unstable` method
+                and self.version.pre.phase == ReleaseLevel.RC  # type: ignore
             ):
                 raise UpdateVersionError(
                     "Prohibited to downgrade version: "
@@ -76,9 +78,15 @@ class ReleaseVersion:
                 return self.__get_release_tag_version()
 
         elif self.release_level is ReleaseLevel.ALPHA:
-            if self.version.is_unstable() and self.version.pre.phase in (
-                ReleaseLevel.RC,
-                ReleaseLevel.BETA,
+            if (
+                self.version.is_unstable()
+                # The type check is ignored because
+                # phase existence checked in `is_unstable` method
+                and self.version.pre.phase  # type: ignore
+                in (
+                    ReleaseLevel.RC,
+                    ReleaseLevel.BETA,
+                )
             ):
                 raise UpdateVersionError(
                     "Prohibited to downgrade version: "
@@ -92,11 +100,15 @@ class ReleaseVersion:
     def __get_release_tag_version(self) -> Version:
         if (
             self.version.is_unstable()
-            and self.version.pre.phase != self.release_level
+            # The type check is ignored because
+            # phase existence checked in `is_unstable` method
+            and self.version.pre.phase != self.release_level  # type: ignore
         ):
             pre = ReleaseTag(self.release_level, 1)
         elif self.version.is_unstable():
-            pre = self.version.pre.next()
+            # The type check is ignored because
+            # phase existence checked in `is_unstable` method
+            pre = self.version.pre.next()  # type: ignore
         else:
             pre = ReleaseTag(self.release_level, 1)
         return Version(self.version.epoch, self.version.release, pre)
