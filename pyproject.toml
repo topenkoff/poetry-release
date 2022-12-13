@@ -29,7 +29,7 @@ sign-commit = true
 sign-tag = true
 
 [tool.poetry.dev-dependencies]
-mypy = "^0.971"
+mypy = ">=0.990"
 isort = "^5.10"
 flake8 = "^3.9"
 black = "^22.8"
