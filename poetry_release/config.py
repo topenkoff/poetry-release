@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-
 if TYPE_CHECKING:
-    from cleo.commands.command import Command
-    from typing import Callable, Any
+    from typing import Any, Callable
 
 
 class Config:

@@ -11,9 +11,9 @@ from tomlkit.toml_document import TOMLDocument
 from poetry_release import git
 from poetry_release.config import Config
 from poetry_release.exception import UpdateVersionError
+from poetry_release.executor import Executor
 from poetry_release.replace import Replacer, Template
 from poetry_release.version import ReleaseLevel, ReleaseVersion
-
 
 if TYPE_CHECKING:
     from typing import Any
@@ -62,6 +62,10 @@ to project repository. Supported release levels are:
 major, minor, patch, release, rc, beta, alpha.
 """
 
+    def __init__(self) -> None:
+        super().__init__()
+        self.executor: Executor = Executor(self.io)
+
     def handle(self) -> int:
         try:
             # Init config
@@ -100,7 +104,10 @@ major, minor, patch, release, rc, beta, alpha.
             )
 
             if not self.confirm(
-                f"Release {self.poetry.package.name} {releaser.next_version.text}?",
+                (
+                    f"Release {self.poetry.package.name} "
+                    f"{releaser.next_version.text}?"
+                ),
                 False,
                 "(?i)^(y|j)",
             ):
@@ -115,7 +122,7 @@ major, minor, patch, release, rc, beta, alpha.
                 prev_version=releaser.version.text,
                 version=releaser.next_version.text,
                 next_version=releaser.next_pre_version.text
-                if releaser.next_pre_version
+                if releaser.has_next_pre_version
                 else "",
                 date=datetime.today().strftime("%Y-%m-%d"),
             )
@@ -123,34 +130,65 @@ major, minor, patch, release, rc, beta, alpha.
             replacer = Replacer(templates, cfg)
             replacer.update_replacements()
             message = replacer.generate_messages()
-            self.set_version(releaser.next_version.text)
 
-            # Git release commit
-            git.create_commit(message.release_commit, cfg.sign_commit)
-            if not cfg.disable_push:
-                git.push_commit()
-
-            # Git tag
-            if not cfg.disable_tag:
-                git.create_tag(
-                    message.tag_name,
-                    message.tag_message,
-                    cfg.sign_tag,
-                )
-                if not cfg.disable_push:
-                    git.push_tag(message.tag_name)
-
-            # Git next iteration commit
-            if not cfg.disable_dev:
-                pre_release = releaser.next_pre_version
-                if pre_release is not None:
-                    self.set_version(pre_release.text)
-                    git.create_commit(
-                        message.post_release_commit,
-                        cfg.sign_commit,
-                    )
-                    if not cfg.disable_push:
-                        git.push_commit()
+            # Set release version
+            self.executor.add(
+                lambda: self.set_version(releaser.next_version.text),
+                True,
+                "Future message for describing the operation in dry-run mode",
+            )
+            # Create git commit
+            self.executor.add(
+                lambda: git.create_commit(
+                    message.release_commit, cfg.sign_commit
+                ),
+                True,
+                "Future message for describing the operation in dry-run mode",
+            )
+            # Push commit with release version
+            self.executor.add(
+                lambda: git.push_commit(),
+                not cfg.disable_push,
+                "Future message for describing the operation in dry-run mode",
+            )
+            # Create tag with release version
+            self.executor.add(
+                lambda: git.create_tag(
+                    message.tag_name, message.tag_message, cfg.sign_tag
+                ),
+                not cfg.disable_tag,
+                "Future message for describing the operation in dry-run mode",
+            )
+            # Push tag with release version
+            self.executor.add(
+                lambda: git.push_tag(message.tag_name),
+                not (cfg.disable_tag or cfg.disable_push),
+                "Future message for describing the operation in dry-run mode",
+            )
+            # Set next iteration version
+            self.executor.add(
+                lambda: self.set_version(releaser.next_pre_version.text),
+                not releaser.has_next_pre_version,
+                "Future message for describing the operation in dry-run mode",
+            )
+            # Create commit with next iteration version
+            self.executor.add(
+                lambda: git.create_commit(
+                    message.post_release_commit, cfg.sign_commit
+                ),
+                not (not releaser.has_next_pre_version or cfg.disable_dev),
+                "Future message for describing the operation in dry-run mode",
+            )
+            # Push commit with next iteration version
+            self.executor.add(
+                lambda: git.push_commit(),
+                not (
+                    not releaser.has_next_pre_version
+                    or cfg.disable_dev
+                    or cfg.disable_push
+                ),
+                "Future message for describing the operation in dry-run mode",
+            )
 
         except RuntimeError as e:
             self.line(f"<fg=red>{e}</>")

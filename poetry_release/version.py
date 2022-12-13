@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Optional
 
 from poetry.core.semver.version import Version
 from poetry.core.version.exceptions import InvalidVersion
@@ -107,12 +106,15 @@ class ReleaseVersion:
         return self.version
 
     @property
+    def has_next_pre_version(self) -> bool:
+        next_version = self.__increment_version()
+        return next_version.is_unstable()
+
+    @property
     def next_version(self) -> Version:
         return self.__increment_version()
 
     @property
-    def next_pre_version(self) -> Optional[Version]:
+    def next_pre_version(self) -> Version:
         next_version = self.__increment_version()
-        if next_version.is_unstable():
-            return None
         return next_version.next_patch().first_prerelease()
