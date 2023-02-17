@@ -20,7 +20,6 @@ if TYPE_CHECKING:
 
 
 class ReleaseCommand(Command):
-
     name = "release"
 
     description = "Plugin for release management in projects based on Poetry"

@@ -8,7 +8,6 @@ from poetry_release.exception import UpdateVersionError
 
 
 class ReleaseLevel(str, Enum):
-
     MAJOR = "major"
     MINOR = "minor"
     PATCH = "patch"
