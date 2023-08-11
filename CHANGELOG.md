@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- add dry-run option
 - use .rst instead of .md for PyPi
 
 ## [0.3.0] - 2021-11-08

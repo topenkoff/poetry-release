@@ -113,8 +113,8 @@ class ReleaseVersion:
         return Version(self.version.epoch, self.version.release, pre)
 
     @property
-    def current_version(self) -> Version:
-        return self.version
+    def current_version(self) -> str:
+        return self.version.text
 
     @property
     def has_next_pre_version(self) -> bool:
@@ -122,10 +122,10 @@ class ReleaseVersion:
         return next_version.is_unstable()
 
     @property
-    def next_version(self) -> Version:
-        return self.__increment_version()
+    def next_version(self) -> str:
+        return self.__increment_version().text
 
     @property
-    def next_pre_version(self) -> Version:
+    def next_pre_version(self) -> str:
         next_version = self.__increment_version()
-        return next_version.next_patch().first_prerelease()
+        return next_version.next_patch().first_prerelease().text

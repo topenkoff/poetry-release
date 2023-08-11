@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from cleo.io.outputs.output import Verbosity
+
 if TYPE_CHECKING:
     from typing import Callable
 
@@ -17,12 +19,14 @@ class Handler:
     ) -> None:
         self.func = func
         self.execute = execute
+        self.msg = msg
 
 
 class Executor:
-    def __init__(self, io: IO) -> None:
+    def __init__(self, io: IO, dry_run: bool | None) -> None:
         self._io = io
         self._handlers: list[Handler] = []
+        self._dry_run = dry_run
 
     def add(
         self,
@@ -35,5 +39,8 @@ class Executor:
 
     def run(self) -> None:
         for handler in filter(lambda x: x.execute, self._handlers):
-            # self._io.write(handler.msg)
+            text = f"<info>{handler.msg}</>"
+            self._io.write_line(text, verbosity=Verbosity.NORMAL)
+            if self._dry_run:
+                return
             handler.func()
