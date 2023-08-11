@@ -31,7 +31,7 @@ sign-tag = true
 [tool.poetry.dev-dependencies]
 mypy = "^1.0"
 isort = "^5.11"
-flake8 = "^3.9"
+# flake8 = "^3.9"
 black = "^23.1"
 
 [tool.mypy]

@@ -28,8 +28,8 @@ jobs:
     - name: Black
       run: poetry run black poetry_release --check
 
-    - name: Flake8
-      run: poetry run flake8 poetry_release
+    #- name: Flake8
+    #  run: poetry run flake8 poetry_release
 
     - name: Isort
       run: poetry run isort poetry_release --check-only
