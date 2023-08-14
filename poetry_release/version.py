@@ -39,6 +39,19 @@ class ReleaseLevel(str, Enum):
                 "Or set <release_level> empty"
             )
 
+    # Release phase according to PEP440
+    def pep440(self) -> str:
+        if self == ReleaseLevel.ALPHA:
+            return "a"
+        elif self == ReleaseLevel.BETA:
+            return "b"
+        elif self == ReleaseLevel.RC:
+            return "rc"
+        else:
+            raise InvalidVersion(
+                "Unknown elease phase IDs according to PEP440"
+            )
+
 
 class ReleaseVersion:
     def __init__(
@@ -67,7 +80,7 @@ class ReleaseVersion:
                 self.version.is_unstable()
                 # The type check is ignored because
                 # phase existence checked in `is_unstable` method
-                and self.version.pre.phase == ReleaseLevel.RC  # type: ignore
+                and self.version.pre.phase == ReleaseLevel.RC.pep440()  # type: ignore
             ):
                 raise UpdateVersionError(
                     "Prohibited to downgrade version: "
@@ -83,8 +96,8 @@ class ReleaseVersion:
                 # phase existence checked in `is_unstable` method
                 and self.version.pre.phase  # type: ignore
                 in (
-                    ReleaseLevel.RC,
-                    ReleaseLevel.BETA,
+                    ReleaseLevel.RC.pep440(),
+                    ReleaseLevel.BETA.pep440(),
                 )
             ):
                 raise UpdateVersionError(

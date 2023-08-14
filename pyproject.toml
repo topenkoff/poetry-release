@@ -33,11 +33,13 @@ mypy = "^1.0"
 isort = "^5.11"
 # flake8 = "^3.9"
 black = "^23.1"
+pytest = "^7.4"
 
 [tool.mypy]
 files = "poetry_release"
 strict = true
 ignore_missing_imports = true
+exclude = "tests"
 
 [tool.black]
 line-length = 79
