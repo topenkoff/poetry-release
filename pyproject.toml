@@ -8,21 +8,19 @@ readme = "README.rst"
 homepage = "https://github.com/topenkoff/poetry-release"
 repository = "https://github.com/topenkoff/poetry-release"
 
-packages = [
-    { include = "poetry_release"}
-]
+packages = [{ include = "poetry_release" }]
 
 [tool.poetry.dependencies]
-python = "^3.7"
-poetry = "^1.2.0"
+python = "^3.10"
+poetry = "^1.8.3"
 
 [tool.poetry.plugins."poetry.application.plugin"]
 poetry-release = "poetry_release.plugin:ReleasePlugin"
 
 [tool.poetry-release]
 release-replacements = [
-    { file="CHANGELOG.md", pattern="\\[Unreleased\\]", replace="[{version}] - {date}" },
-    { file="CHANGELOG.md", pattern="\\(https://semver.org/spec/v2.0.0.html\\).", replace="(https://semver.org/spec/v2.0.0.html).\n\n## [Unreleased]"},
+    { file = "CHANGELOG.md", pattern = "\\[Unreleased\\]", replace = "[{version}] - {date}" },
+    { file = "CHANGELOG.md", pattern = "\\(https://semver.org/spec/v2.0.0.html\\).", replace = "(https://semver.org/spec/v2.0.0.html).\n\n## [Unreleased]" },
 ]
 release-commit-message = "Release {package_name} {version} 🎉🎉🎉"
 sign-commit = true
@@ -31,7 +29,6 @@ sign-tag = true
 [tool.poetry.dev-dependencies]
 mypy = "^1.0"
 isort = "^5.11"
-# flake8 = "^3.9"
 black = "^23.1"
 
 [tool.mypy]

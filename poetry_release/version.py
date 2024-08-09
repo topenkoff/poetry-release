@@ -1,6 +1,6 @@
 from enum import Enum
 
-from poetry.core.semver.version import Version
+from poetry.core.constraints.version import Version
 from poetry.core.version.exceptions import InvalidVersion
 from poetry.core.version.pep440.segments import ReleaseTag
 
